@@ -32,6 +32,12 @@ public class FeedEntryContent extends AbstractModel {
 	@Type(type = "org.hibernate.type.TextType")
 	private String content;
 
+	@Column(length = Integer.MAX_VALUE)
+	private String ch_content;
+
+	@Column(length = 40)
+	private Boolean if_translate;
+
 	@Column(length = 40)
 	private String contentHash;
 
@@ -68,6 +74,8 @@ public class FeedEntryContent extends AbstractModel {
 
 		return new EqualsBuilder().append(title, c.title)
 				.append(content, c.content)
+				.append(ch_content, c.ch_content)
+				.append(if_translate, c.if_translate)
 				.append(author, c.author)
 				.append(enclosureUrl, c.enclosureUrl)
 				.append(enclosureType, c.enclosureType)

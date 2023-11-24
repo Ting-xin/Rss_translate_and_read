@@ -44,6 +44,8 @@ export interface Entry {
     guid: string
     title: string
     content: string
+    ch_content: string
+    if_translate: boolean
     categories?: string
     rtl: boolean
     author?: string
@@ -250,6 +252,10 @@ export interface Subscription {
 export interface TagRequest {
     entryId: number
     tags: string[]
+}
+
+export interface TranslateRequest {
+    entryId: number
 }
 
 export interface UnreadCount {

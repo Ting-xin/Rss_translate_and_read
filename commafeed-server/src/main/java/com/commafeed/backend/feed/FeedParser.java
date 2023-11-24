@@ -60,6 +60,12 @@ public class FeedParser {
     private static final Date END = new Date(1000L * Integer.MAX_VALUE - 86400000);
 
     private static  final Translator translator = new Translator("aea4d2b0-8175-251e-38ca-ef0ccd4d079a:fx");
+    // 1e98d029-0903-65ab-94fb-fb4f669add87:fx
+    // 4b8fb33c-1c3d-8d8c-0ef5-0ee15d693cfe:fx
+
+    //https://www.cycleworld.com/arcio/rss/
+    //
+    //https://www.bikeexif.com/feed
 
     public FeedParserResult parse(String feedUrl, byte[] xml) throws FeedException {
 
@@ -194,27 +200,27 @@ public class FeedParser {
         return date;
     }
 
-//    private String getContent(SyndEntry item) {
-//		String content = null;
-//		if (item.getContents().isEmpty()) {
-//			content = item.getDescription() == null ? null : item.getDescription().getValue();
-//		} else {
-//			content = item.getContents().stream().map(SyndContent::getValue).collect(Collectors.joining(System.lineSeparator()));
-//		}
-//		return StringUtils.trimToNull(content);
-//	}
-
     private String getContent(SyndEntry item) {
-        String content = null;
-        if (item.getContents().isEmpty()) {
-            content = item.getDescription() == null ? null : item.getDescription().getValue();
-        } else {
-            content = item.getContents().stream().map(SyndContent::getValue).collect(Collectors.joining(System.lineSeparator()));
-        }
-        String temp = XMLTranslate(content);
-        return StringUtils.trimToNull(temp);
-//        return StringUtils.trimToNull(content);
-    }
+		String content = null;
+		if (item.getContents().isEmpty()) {
+			content = item.getDescription() == null ? null : item.getDescription().getValue();
+		} else {
+			content = item.getContents().stream().map(SyndContent::getValue).collect(Collectors.joining(System.lineSeparator()));
+		}
+		return StringUtils.trimToNull(content);
+	}
+
+//    private String getContent(SyndEntry item) {
+//        String content = null;
+//        if (item.getContents().isEmpty()) {
+//            content = item.getDescription() == null ? null : item.getDescription().getValue();
+//        } else {
+//            content = item.getContents().stream().map(SyndContent::getValue).collect(Collectors.joining(System.lineSeparator()));
+//        }
+//        String temp = XMLTranslate(content);
+//        return StringUtils.trimToNull(temp);
+////        return StringUtils.trimToNull(content);
+//    }
 
     private  String XMLTranslate(String str) {
         try {
@@ -250,7 +256,7 @@ public class FeedParser {
         }
     }
 
-    private String translateString(String str) {
+    public String translateString(String str) {
         try {
             TextResult textResult = translator.translateText(str, "en", "zh");
             return textResult.getText();
@@ -269,7 +275,7 @@ public class FeedParser {
                 title = "(no title)";
             }
         }
-        String temp = XMLTranslate(title);
+        String temp = translateString(title);
         return StringUtils.trimToNull(temp);
 //        return StringUtils.trimToNull(title);
     }

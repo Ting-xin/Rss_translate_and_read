@@ -23,6 +23,7 @@ import {
     SubscribeRequest,
     Subscription,
     TagRequest,
+    TranslateRequest,
     UserModel,
 } from "./types"
 
@@ -56,6 +57,7 @@ export const client = {
         star: (req: StarRequest) => axiosInstance.post("entry/star", req),
         getTags: () => axiosInstance.get<string[]>("entry/tags"),
         tag: (req: TagRequest) => axiosInstance.post("entry/tag", req),
+        tranlate: (req: TranslateRequest) => axiosInstance.post("entry/translate", req),
     },
     feed: {
         get: (id: string) => axiosInstance.get<Subscription>(`feed/get/${id}`),

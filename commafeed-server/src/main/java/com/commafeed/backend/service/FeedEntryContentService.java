@@ -51,6 +51,8 @@ public class FeedEntryContentService {
 		content.setAuthor(FeedUtils.truncate(handleContent(content.getAuthor(), baseUrl, true), 128));
 		content.setTitle(FeedUtils.truncate(handleContent(content.getTitle(), baseUrl, true), 2048));
 		content.setContent(handleContent(content.getContent(), baseUrl, false));
+		content.setCh_content("");
+		content.setIf_translate(Boolean.FALSE);
 		content.setMediaDescription(handleContent(content.getMediaDescription(), baseUrl, false));
 
 		String contentHash = DigestUtils.sha1Hex(StringUtils.trimToEmpty(content.getContent()));

@@ -1,6 +1,8 @@
-import { Box } from "@mantine/core"
+import { Box, Button } from "@mantine/core"
 import { useAppSelector } from "app/store"
 import { Entry } from "app/types"
+import { useAsyncCallback } from "react-async-hook"
+import { client } from "app/client"
 import { Content } from "./Content"
 import { Enclosure } from "./Enclosure"
 import { Media } from "./Media"
@@ -11,8 +13,18 @@ export interface FeedEntryBodyProps {
 
 export function FeedEntryBody(props: FeedEntryBodyProps) {
     const search = useAppSelector(state => state.entries.search)
+    const translate = useAsyncCallback(client.entry.tranlate, {
+        onSuccess: data => {
+            console.log("success: ", data)
+        },
+    })
     return (
         <Box>
+            <Box>
+                <Button variant="gradient" onClick={() => translate.execute}>
+                    翻译
+                </Button>
+            </Box>
             <Box>
                 <Content content={props.entry.content} highlight={search} />
             </Box>

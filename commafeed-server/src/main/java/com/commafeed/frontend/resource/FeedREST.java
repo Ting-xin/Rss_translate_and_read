@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import com.commafeed.backend.feed.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,11 +44,7 @@ import com.commafeed.backend.dao.FeedCategoryDAO;
 import com.commafeed.backend.dao.FeedEntryStatusDAO;
 import com.commafeed.backend.dao.FeedSubscriptionDAO;
 import com.commafeed.backend.favicon.AbstractFaviconFetcher.Favicon;
-import com.commafeed.backend.feed.FeedEntryKeyword;
-import com.commafeed.backend.feed.FeedFetcher;
 import com.commafeed.backend.feed.FeedFetcher.FeedFetcherResult;
-import com.commafeed.backend.feed.FeedRefreshEngine;
-import com.commafeed.backend.feed.FeedUtils;
 import com.commafeed.backend.model.Feed;
 import com.commafeed.backend.model.FeedCategory;
 import com.commafeed.backend.model.FeedEntry;
@@ -396,7 +393,9 @@ public class FeedREST {
 				category = feedCategoryDAO.findById(Long.valueOf(req.getCategoryId()));
 			}
 			FeedInfo info = fetchFeedInternal(url);
-			long subscriptionId = feedSubscriptionService.subscribe(user, info.getUrl(), req.getTitle(), category);
+            FeedParser feedParser = new FeedParser();
+            long subscriptionId = feedSubscriptionService.subscribe(user, info.getUrl(), req.getTitle(), category);
+//			long subscriptionId = feedSubscriptionService.subscribe(user, info.getUrl(), feedParser.translateString(req.getTitle()), category);
 			return Response.ok(subscriptionId).build();
 		} catch (Exception e) {
 			log.error("Failed to subscribe to URL {}: {}", url, e.getMessage(), e);

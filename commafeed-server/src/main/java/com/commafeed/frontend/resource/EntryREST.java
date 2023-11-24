@@ -19,10 +19,7 @@ import com.commafeed.backend.model.User;
 import com.commafeed.backend.service.FeedEntryService;
 import com.commafeed.backend.service.FeedEntryTagService;
 import com.commafeed.frontend.auth.SecurityCheck;
-import com.commafeed.frontend.model.request.MarkRequest;
-import com.commafeed.frontend.model.request.MultipleMarkRequest;
-import com.commafeed.frontend.model.request.StarRequest;
-import com.commafeed.frontend.model.request.TagRequest;
+import com.commafeed.frontend.model.request.*;
 import com.google.common.base.Preconditions;
 
 import io.dropwizard.hibernate.UnitOfWork;
@@ -42,6 +39,20 @@ public class EntryREST {
 	private final FeedEntryTagDAO feedEntryTagDAO;
 	private final FeedEntryService feedEntryService;
 	private final FeedEntryTagService feedEntryTagService;
+
+	@Path("/translate")
+	@POST
+	@UnitOfWork
+	@ApiOperation(value = "Translate a feed entry", notes = "Translate a feed entry")
+	@Timed
+	public Response translateEntry(@ApiParam(hidden = true) @SecurityCheck User user,
+			@ApiParam(value = "Translate Request", required = true) TranslateRequest req) {
+		Preconditions.checkNotNull(req);
+		Preconditions.checkNotNull(req.getId());
+
+		feedEntryService.translateEntry(user, Long.valueOf(req.getId()));
+		return Response.ok().build();
+	}
 
 	@Path("/mark")
 	@POST

@@ -7,6 +7,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.deepl.api.TextResult;
+import com.deepl.api.Translator;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.commafeed.backend.cache.CacheService;
@@ -23,6 +25,9 @@ import com.commafeed.backend.model.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__({ @Inject }))
@@ -35,6 +40,9 @@ public class FeedEntryService {
 	private final FeedEntryContentService feedEntryContentService;
 	private final FeedEntryFilteringService feedEntryFilteringService;
 	private final CacheService cache;
+	private static  final Translator translator = new Translator("aea4d2b0-8175-251e-38ca-ef0ccd4d079a:fx");
+	// 1e98d029-0903-65ab-94fb-fb4f669add87:fx
+	// 4b8fb33c-1c3d-8d8c-0ef5-0ee15d693cfe:fx
 
 	/**
 	 * this is NOT thread-safe
@@ -69,6 +77,72 @@ public class FeedEntryService {
 		}
 
 		return true;
+	}
+
+	public String translateEntry(User user, Long entryId) {
+		FeedEntry entry = feedEntryDAO.findById(entryId);
+		if(entry == null) {
+			return "";
+		}
+
+		FeedSubscription sub = feedSubscriptionDAO.findByFeed(user, entry.getFeed());
+		if(sub == null) {
+			return "";
+		}
+
+		FeedEntryContent content = entry.getContent();
+		if(content.getIf_translate()) {
+			return content.getCh_content();
+		}
+		String ch_content = XMLTranslate(content.getContent());
+		content.setCh_content(ch_content);
+		content.setIf_translate(Boolean.TRUE);
+		entry.setContent(content);
+		feedEntryDAO.update(entry);
+		return ch_content;
+	}
+
+	private  String XMLTranslate(String str) {
+		try {
+			// 使用Jsoup解析HTML字符串
+			Document document = Jsoup.parse(str, "", Parser.xmlParser());
+
+			// 获取根节点
+			org.jsoup.nodes.Element root = document.root();
+
+			// 遍历所有文本节点
+			processTextNodes(root);
+
+			return document.outerHtml();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return str;
+		}
+	}
+	private void processTextNodes(org.jsoup.nodes.Element element) {
+		// 遍历当前节点的子节点
+		for (org.jsoup.nodes.Element child : element.children()) {
+			if (child.tagName().equals("p") || child.tagName().equals("span") || child.tagName().equals("b")
+					|| child.tagName().equals("caption") || child.tagName().equals("summary") || child.tagName().equals("div")
+					|| child.tagName().equals("description")) {
+				// 处理文字节点
+				String originalText = child.text();
+				String translatedText = translateString(originalText); // 调用翻译方法，将原始文本翻译为目标语言
+				child.text(translatedText); // 替换文本节点的内容为翻译后的文本
+			} else {
+				// 递归处理子节点
+				processTextNodes(child);
+			}
+		}
+	}
+
+	public String translateString(String str) {
+		try {
+			TextResult textResult = translator.translateText(str, "en", "zh");
+			return textResult.getText();
+		} catch (Exception ex) {
+			return str;
+		}
 	}
 
 	public void markEntry(User user, Long entryId, boolean read) {
