@@ -138,12 +138,4 @@ logging:
 # Redis pool configuration
 # (only used if app.cache is 'redis')
 # -----------------------------------
-redis:
-  host: localhost
-  port: 6379
-  # username is only required when using ACLs
-  username:
-  password:
-  timeout: 2000
-  database: 0
-  maxTotal: 500
+

@@ -393,7 +393,7 @@ public class FeedREST {
 				category = feedCategoryDAO.findById(Long.valueOf(req.getCategoryId()));
 			}
 			FeedInfo info = fetchFeedInternal(url);
-            FeedParser feedParser = new FeedParser();
+//            FeedParser feedParser = new FeedParser();
             long subscriptionId = feedSubscriptionService.subscribe(user, info.getUrl(), req.getTitle(), category);
 //			long subscriptionId = feedSubscriptionService.subscribe(user, info.getUrl(), feedParser.translateString(req.getTitle()), category);
 			return Response.ok(subscriptionId).build();

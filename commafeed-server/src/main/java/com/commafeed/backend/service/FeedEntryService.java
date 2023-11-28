@@ -91,15 +91,21 @@ public class FeedEntryService {
 		}
 
 		FeedEntryContent content = entry.getContent();
-		if(content.getIf_translate()) {
-			return content.getCh_content();
-		}
-		String ch_content = XMLTranslate(content.getContent());
-		content.setCh_content(ch_content);
-		content.setIf_translate(Boolean.TRUE);
+		//使用第三方接口获取全文
+//		if (!content.getSummary()){
+//			//无全文，使用第三方接口获取
+//		}else {
+//			//自带全文情况下翻译
+//		}
+
+		//已有content译文，返回现有译文
+		if (content.getContentZh() != null) return content.getContentZh();
+		//无译文，翻译
+		String contentZh = XMLTranslate(content.getContent());
+		content.setContentZh(contentZh);
 		entry.setContent(content);
 		feedEntryDAO.update(entry);
-		return ch_content;
+		return contentZh;
 	}
 
 	private  String XMLTranslate(String str) {

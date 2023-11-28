@@ -59,6 +59,8 @@ public class FeedParser {
     private static final Date START = new Date(86400000);
     private static final Date END = new Date(1000L * Integer.MAX_VALUE - 86400000);
 
+    private final int fullTextLength = 1500;
+
     private static  final Translator translator = new Translator("aea4d2b0-8175-251e-38ca-ef0ccd4d079a:fx");
     // 1e98d029-0903-65ab-94fb-fb4f669add87:fx
     // 4b8fb33c-1c3d-8d8c-0ef5-0ee15d693cfe:fx
@@ -111,9 +113,13 @@ public class FeedParser {
 
                 FeedEntryContent content = new FeedEntryContent();
                 content.setContent(getContent(item));
+                //是否包含全文
+                content.setSummary(isSummary(item));
                 content.setCategories(FeedUtils
                         .truncate(item.getCategories().stream().map(SyndCategory::getName).collect(Collectors.joining(", ")), 4096));
                 content.setTitle(getTitle(item));
+                //中文标题
+                content.setTitleZh(getTitleZh(item));
                 content.setAuthor(StringUtils.trimToNull(item.getAuthor()));
 
                 SyndEnclosure enclosure = Iterables.getFirst(item.getEnclosures(), null);
@@ -210,6 +216,18 @@ public class FeedParser {
 		return StringUtils.trimToNull(content);
 	}
 
+    //判断content是否包含全文
+    private Boolean isSummary(SyndEntry item) {
+        String content = null;
+        if (item.getContents().isEmpty()) {
+            content = item.getDescription() == null ? null : item.getDescription().getValue();
+        } else {
+            content = item.getContents().stream().map(SyndContent::getValue).collect(Collectors.joining(System.lineSeparator()));
+        }
+        content = StringUtils.trimToNull(content);
+        return content.length() > fullTextLength ? true : false;
+    }
+
 //    private String getContent(SyndEntry item) {
 //        String content = null;
 //        if (item.getContents().isEmpty()) {
@@ -275,9 +293,20 @@ public class FeedParser {
                 title = "(no title)";
             }
         }
-        String temp = translateString(title);
-        return StringUtils.trimToNull(temp);
-//        return StringUtils.trimToNull(title);
+        return StringUtils.trimToNull(title);
+    }
+
+    private String getTitleZh(SyndEntry item) {
+        String title = item.getTitle();
+        if (StringUtils.isBlank(title)) {
+            Date date = item.getPublishedDate();
+            if (date != null) {
+                title = DateFormat.getInstance().format(date);
+            } else {
+                title = "(no title)";
+            }
+        }
+        return StringUtils.trimToNull(translateString(title));
     }
 
     private Media getMedia(MediaEntryModule module) {

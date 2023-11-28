@@ -21,70 +21,92 @@ import lombok.Setter;
 @Setter
 public class FeedEntryContent extends AbstractModel {
 
-	@Column(length = 2048)
-	private String title;
+    @Column(length = 2048)
+    private String title;
 
-	@Column(length = 40)
-	private String titleHash;
+    @Column(length = 40)
+    private String titleHash;
 
-	@Lob
-	@Column(length = Integer.MAX_VALUE)
-	@Type(type = "org.hibernate.type.TextType")
-	private String content;
+    @Lob
+    @Column(length = Integer.MAX_VALUE)
+    @Type(type = "org.hibernate.type.TextType")
+    private String content;
 
-	@Column(length = Integer.MAX_VALUE)
-	private String ch_content;
+    @Column(length = 40)
+    private String contentHash;
 
-	@Column(length = 40)
-	private Boolean if_translate;
+    @Column(name = "author", length = 128)
+    private String author;
 
-	@Column(length = 40)
-	private String contentHash;
+    @Column(length = 2048)
+    private String enclosureUrl;
 
-	@Column(name = "author", length = 128)
-	private String author;
+    @Column(length = 255)
+    private String enclosureType;
 
-	@Column(length = 2048)
-	private String enclosureUrl;
+    @Lob
+    @Column(length = Integer.MAX_VALUE)
+    @Type(type = "org.hibernate.type.TextType")
+    private String mediaDescription;
 
-	@Column(length = 255)
-	private String enclosureType;
+    @Column(length = 2048)
+    private String mediaThumbnailUrl;
 
-	@Lob
-	@Column(length = Integer.MAX_VALUE)
-	@Type(type = "org.hibernate.type.TextType")
-	private String mediaDescription;
+    private Integer mediaThumbnailWidth;
+    private Integer mediaThumbnailHeight;
 
-	@Column(length = 2048)
-	private String mediaThumbnailUrl;
+    @Column(length = 4096)
+    private String categories;
 
-	private Integer mediaThumbnailWidth;
-	private Integer mediaThumbnailHeight;
+    @OneToMany(mappedBy = "content")
+    private Set<FeedEntry> entries;
 
-	@Column(length = 4096)
-	private String categories;
 
-	@OneToMany(mappedBy = "content")
-	private Set<FeedEntry> entries;
+    /*
+    中文相关字段
+     */
 
-	public boolean equivalentTo(FeedEntryContent c) {
-		if (c == null) {
-			return false;
-		}
+    @Column(length = Integer.MAX_VALUE)
+    @Type(type = "org.hibernate.type.TextType")
+    private String contentZh;
 
-		return new EqualsBuilder().append(title, c.title)
-				.append(content, c.content)
-				.append(ch_content, c.ch_content)
-				.append(if_translate, c.if_translate)
-				.append(author, c.author)
-				.append(enclosureUrl, c.enclosureUrl)
-				.append(enclosureType, c.enclosureType)
-				.append(mediaDescription, c.mediaDescription)
-				.append(mediaThumbnailUrl, c.mediaThumbnailUrl)
-				.append(mediaThumbnailWidth, c.mediaThumbnailWidth)
-				.append(mediaThumbnailHeight, c.mediaThumbnailHeight)
-				.append(categories, c.categories)
-				.build();
-	}
+    @Column(length = 2048)
+    private String titleZh;
+
+    //是否为全文
+    private Boolean summary;
+    //无全文情况下，通过第三方接口获取全文时
+
+    @Column(length = Integer.MAX_VALUE)
+    @Type(type = "org.hibernate.type.TextType")
+    private String fullText;
+
+    @Column(length = Integer.MAX_VALUE)
+    @Type(type = "org.hibernate.type.TextType")
+    private String fullTextZh;
+
+
+    public boolean equivalentTo(FeedEntryContent c) {
+        if (c == null) {
+            return false;
+        }
+
+        return new EqualsBuilder().append(title, c.title)
+                .append(content, c.content)
+                .append(author, c.author)
+                .append(contentZh, c.contentZh)
+                .append(titleZh, c.titleZh)
+                .append(summary, c.summary)
+                .append(fullText, c.fullText)
+                .append(fullTextZh, c.fullTextZh)
+                .append(enclosureUrl, c.enclosureUrl)
+                .append(enclosureType, c.enclosureType)
+                .append(mediaDescription, c.mediaDescription)
+                .append(mediaThumbnailUrl, c.mediaThumbnailUrl)
+                .append(mediaThumbnailWidth, c.mediaThumbnailWidth)
+                .append(mediaThumbnailHeight, c.mediaThumbnailHeight)
+                .append(categories, c.categories)
+                .build();
+    }
 
 }
