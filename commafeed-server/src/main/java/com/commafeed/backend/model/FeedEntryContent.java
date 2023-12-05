@@ -74,7 +74,7 @@ public class FeedEntryContent extends AbstractModel {
     private String titleZh;
 
     //是否为全文
-    private Boolean summary;
+    private boolean summary;
     //无全文情况下，通过第三方接口获取全文时
 
     @Column(length = Integer.MAX_VALUE)

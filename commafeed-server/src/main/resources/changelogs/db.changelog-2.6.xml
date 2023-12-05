@@ -29,4 +29,24 @@
 			columnDataType="VARCHAR(4096)" />
 	</changeSet>
 
+	<changeSet id="add-translate-for-rss" author="zhngzhng">
+		<addColumn tableName="FEEDENTRYCONTENTS">
+			<column name="summary" type="BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</addColumn>
+		<addColumn tableName="FEEDENTRYCONTENTS">
+			<column name="titleZh" type="VARCHAR(2048)" />
+		</addColumn>
+		<addColumn tableName="FEEDENTRYCONTENTS">
+			<column name="contentZh" type="CLOB" />
+		</addColumn>
+		<addColumn tableName="FEEDENTRYCONTENTS">
+			<column name="fullText" type="CLOB" />
+		</addColumn>
+		<addColumn tableName="FEEDENTRYCONTENTS">
+			<column name="fullTextZh" type="CLOB" />
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
